@@ -1,89 +1,3 @@
-// import React, { useEffect, useState, useContext } from "react";
-// import { useParams, useNavigate } from "react-router-dom";
-// import MediaRecorder from "react-media-recorder";
-// import { Button } from "./components/ui/button";
-// import { VideoContext } from "./context/VideoContext";
-
-// export default function TrainPage() {
-//   const { index } = useParams();
-//   const { updateVideoAtIndex } = useContext(VideoContext);
-//   const navigate = useNavigate();
-
-//   const [countdown, setCountdown] = useState(3);
-//   const [showTutorial, setShowTutorial] = useState(false);
-//   const [recordingReady, setRecordingReady] = useState(false);
-//   const tutorialVideoUrl = "/public/boogie_square_tutorial.mp4"; // Place your tutorial video in public/
-
-//   useEffect(() => {
-//     const timer = setInterval(() => {
-//       setCountdown((prev) => {
-//         if (prev === 1) {
-//           clearInterval(timer);
-//           setShowTutorial(true);
-//         }
-//         return prev - 1;
-//       });
-//     }, 1000);
-//     return () => clearInterval(timer);
-//   }, []);
-
-//   return (
-//     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 animate-fadeIn">
-//       <h2 className="text-2xl font-semibold mb-6">Slot #{index}</h2>
-
-//       {countdown > 0 && (
-//         <div className="text-[5rem] font-bold animate-pulse mb-4">
-//           {countdown}
-//         </div>
-//       )}
-
-//       {showTutorial && !recordingReady && (
-//         <>
-//           {console.log("showTutorial")} {/* ← this runs when the block renders */}
-//           <video
-//             src={tutorialVideoUrl}
-//             controls
-//             autoPlay
-//             muted
-//             className="w-full max-w-xl my-4 rounded-lg shadow-md"
-//             onEnded={() => setRecordingReady(true)}
-//           />
-//           <p className="text-gray-400 mb-4">Watch the tutorial above</p>
-//         </>
-//       )}
-
-//       {recordingReady && typeof MediaRecorder !== "undefined" && (
-//         <MediaRecorder
-//           video
-//           render={({ startRecording, stopRecording, mediaBlobUrl }) => (
-//             <div className="flex flex-col items-center gap-4">
-//               {!mediaBlobUrl ? (
-//                 <>
-//                   <p>Ready to record your version</p>
-//                   <Button onClick={startRecording}>Start Recording</Button>
-//                   <Button onClick={stopRecording}>Stop Recording</Button>
-//                 </>
-//               ) : (
-//                 <>
-//                   <video src={mediaBlobUrl} controls className="w-full max-w-xl rounded-lg" />
-//                   <Button
-//                     onClick={() => {
-//                       updateVideoAtIndex(parseInt(index), mediaBlobUrl);
-//                       navigate("/");
-//                     }}
-//                   >
-//                     Save & Return to Grid
-//                   </Button>
-//                 </>
-//               )}
-//             </div>
-//           )}
-//         />
-//       )}
-//     </div>
-//   );
-// }
-
 import React, { useEffect, useRef, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { VideoContext } from "./context/VideoContext";
@@ -99,6 +13,7 @@ export default function TrainPage() {
   const [recordingReady, setRecordingReady] = useState(false);
   const [recording, setRecording] = useState(false);
   const [recordedBlobUrl, setRecordedBlobUrl] = useState(null);
+  const tutorialRef = useRef(null);
 
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -164,19 +79,35 @@ export default function TrainPage() {
         <div className="text-[5rem] font-bold animate-pulse mb-4">{countdown}</div>
       )}
 
-      {showTutorial && !recordingReady && (
+      {showTutorial && (
         <>
-          <video
+            <video
+            ref={tutorialRef}
             src={tutorialVideoUrl}
             controls
             autoPlay
             muted
             className="w-full max-w-xl my-4 rounded-lg shadow-md"
             onEnded={() => setRecordingReady(true)}
-          />
-          <p className="text-gray-400 mb-4">Watch the tutorial above</p>
+            />
+            <p className="text-gray-400 mb-4">Watch the tutorial above</p>
+
+            {recordingReady && !recordedBlobUrl && (
+            <Button
+                onClick={() => {
+                if (tutorialRef.current) {
+                    tutorialRef.current.currentTime = 0;
+                    tutorialRef.current.play();
+                }
+                }}
+                className="mt-2"
+            >
+                Rewatch Tutorial
+            </Button>
+            )}
         </>
       )}
+
 
       {recordingReady && !recordedBlobUrl && (
         <div className="flex flex-col items-center gap-4">
