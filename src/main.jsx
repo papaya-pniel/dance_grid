@@ -1,10 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './app.jsx'
-import './index.css' // ← add this line
+import React from "react";
+import ReactDOM from "react-dom/client";
+import AppRouter from "./router.jsx";
+import { VideoProvider } from "./context/VideoContext";
+import "./index.css";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+    <VideoProvider>
+      <AppRouter />
+    </VideoProvider>
+  </React.StrictMode>
+);
