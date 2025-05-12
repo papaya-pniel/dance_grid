@@ -19,6 +19,10 @@ export default function TrainPage() {
   const mediaRecorderRef = useRef(null);
   const streamRef = useRef(null);
   const chunksRef = useRef([]);
+  const handleReRecord = () => {
+    setRecordedBlobUrl(null);
+    setRecordingReady(true);
+  };
 
   const tutorialVideoUrl = "/boogie_square_tutorial.mp4"; // Ensure this is in your /public folder
 
@@ -125,15 +129,22 @@ export default function TrainPage() {
 
       {recordedBlobUrl && (
         <div className="flex flex-col items-center gap-4 mt-4">
-          <video src={recordedBlobUrl} controls className="w-full max-w-xl rounded" />
-          <Button
-            onClick={() => {
-              updateVideoAtIndex(parseInt(index), recordedBlobUrl);
-              navigate("/");
-            }}
-          >
-            Save & Return to Grid
-          </Button>
+            <video src={recordedBlobUrl} controls className="w-full max-w-xl rounded" />
+
+            <div className="flex gap-4">
+            <Button
+                onClick={() => {
+                updateVideoAtIndex(parseInt(index), recordedBlobUrl);
+                navigate("/");
+                }}
+            >
+                Save & Return to Grid
+            </Button>
+
+            <Button variant="secondary" onClick={handleReRecord}>
+                Re-record
+            </Button>
+            </div>
         </div>
       )}
     </div>
