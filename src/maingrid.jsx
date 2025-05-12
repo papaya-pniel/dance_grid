@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useState } from "react";
+import React, { useContext, useCallback, useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "./components/ui/card";
 import { VideoContext } from "./context/VideoContext";
@@ -24,6 +24,25 @@ export default function MainGrid() {
   const handleSlotClick = (index) => {
     navigate(`/train/${index}`);
   };
+  const [selectedSong, setSelectedSong] = useState("vibe1.mp3");
+
+  const songs = [
+    { label: "Rumour Has It", file: "rumour_has_it.mp3" },
+    { label: "Tears Dry on Their Own", file: "tears_dry_on_their_own.mp3" },
+  ];
+
+  const audioRef = useRef();
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.4;
+      audioRef.current.load();
+      audioRef.current
+        .play()
+        .catch((err) => console.warn("Autoplay failed", err));
+    }
+  }, [selectedSong]);
+
 
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
@@ -74,6 +93,25 @@ export default function MainGrid() {
             </button>
           ))}
         </div>
+        
+        {/* Music Dropdown */}
+        <div className="flex items-center gap-2 mb-4">
+          <label htmlFor="song" className="text-sm text-white">
+            🎵 Choose Music:
+          </label>
+          <select
+            id="song"
+            value={selectedSong}
+            onChange={(e) => setSelectedSong(e.target.value)}
+            className="bg-white/10 border border-white/20 text-white rounded px-3 py-1"
+          >
+            {songs.map((song) => (
+              <option key={song.file} value={song.file}>
+                {song.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* Grid Panel */}
         <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-xl">
@@ -111,6 +149,17 @@ export default function MainGrid() {
             ))}
           </div>
         </div>
+
+        {/* Audio player */}
+        <audio
+          ref={audioRef}
+          autoPlay
+          loop
+          className="hidden"
+        >
+          <source src={`/music/${selectedSong}`} type="audio/mp3" />
+        </audio>
+
       </div>
     </div>
   );
