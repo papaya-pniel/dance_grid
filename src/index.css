@@ -6,3 +6,10 @@
 body {
   @apply bg-gray-100 text-gray-800;
 }
+
+video {
+    border: none !important;
+    outline: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }

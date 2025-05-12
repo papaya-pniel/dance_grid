@@ -9,7 +9,27 @@ export default function MainGrid() {
   const navigate = useNavigate();
   const { videos } = useContext(VideoContext);
 
-  const [gridSize, setGridSize] = useState(2); // default 2x2
+  // Read saved settings (or fall back)
+  const [gridSize, _setGridSize] = useState(() => {
+  const saved = localStorage.getItem("gridSize");
+    return saved ? parseInt(saved, 10) : 2;
+  });
+
+  const [pattern, _setPattern] = useState(() => {
+    return localStorage.getItem("pattern") || "default";
+  });
+
+  // Wrap setters so they persist
+  const setGridSize = (size) => {
+    _setGridSize(size);
+    localStorage.setItem("gridSize", size.toString());
+  };
+
+  const setPattern = (pat) => {
+    _setPattern(pat);
+    localStorage.setItem("pattern", pat);
+  };
+
 
   const totalSlots = gridSize * gridSize;
   const paddedVideos = [...videos];
@@ -33,6 +53,7 @@ export default function MainGrid() {
 
   const audioRef = useRef();
 
+
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = 0.4;
@@ -43,9 +64,21 @@ export default function MainGrid() {
     }
   }, [selectedSong]);
 
+  // whenever gridSize changes, if it's not 4 and you were on center-focus, reset to default
+  useEffect(() => {
+    if (pattern === "center-focus") {
+      setGridSize(4);
+    }
+  }, [pattern]);
+
+  useEffect(() => {
+    if (pattern === "center-focus" && gridSize !== 4) {
+      setPattern("default");
+    }
+  }, [gridSize, pattern]);
 
   return (
-    <div className="relative min-h-screen bg-black text-white overflow-hidden">
+    <div className="relative min-h-screen bg-black text-white overflow-hidden rounded-none">
       {/* Background Particles */}
       <Particles
         id="tsparticles"
@@ -83,7 +116,7 @@ export default function MainGrid() {
             <button
               key={size}
               onClick={() => setGridSize(size)}
-              className={`px-4 py-2 rounded ${
+              className={`px-4 py-2 !rounded-none ${
                 gridSize === size
                   ? "bg-purple-600 text-white"
                   : "bg-white/10 text-white hover:bg-white/20"
@@ -113,25 +146,113 @@ export default function MainGrid() {
           </select>
         </div>
 
-        {/* Grid Panel */}
-        <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-xl">
-          <div
-            className={`grid gap-4`}
-            style={{
-              gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
-              width: 'calc(min(90vw, 90vh))',
-              height: 'calc(min(90vw, 90vh))',
-            }}
+        {/* Pattern Selector */}
+        <div className="flex items-center gap-2 mb-4">
+          <label htmlFor="pattern" className="text-sm text-white">
+            🧩 Choose Pattern:
+          </label>
+          <select
+            id="pattern"
+            value={pattern}
+            onChange={(e) => setPattern(e.target.value)}
+            className="bg-white/10 border border-white/20 text-white px-3 py-1 rounded-none"
           >
-            {paddedVideos.map((src, idx) => (
-              <Card
-                key={idx}
-                role="button"
-                tabIndex={0}
-                onClick={() => handleSlotClick(idx)}
-                className="aspect-square bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center overflow-hidden cursor-pointer transition-transform duration-200 hover:scale-105 hover:border-white/20"
-              >
-                <CardContent className="p-0 w-full h-full flex items-center justify-center">
+            <option value="default">Default Grid</option>
+            {gridSize === 4 && (
+              <option value="center-focus">Center Focus</option>
+            )}
+          </select>
+        </div>
+
+        {/* Grid Panel */}
+        <div className="bg-white/5 backdrop-blur-md p-0 border border-white/10 shadow-xl">
+          {pattern === "center-focus" ? (
+            // —— Center-Focus 4×4 Pattern ——
+            <div
+              className="grid grid-cols-4 grid-rows-4 gap-0"
+              style={{
+                width: "calc(min(90vw, 90vh))",
+                height: "calc(min(90vw, 90vh))",
+              }}
+            >
+              {Array.from({ length: 16 }).map((_, idx) => {
+                // Skip the 3 extra cells of the merged center
+                if ([6, 9, 10].includes(idx)) return null;
+
+                // The one big center tile
+                if (idx === 5) {
+                  const src = paddedVideos[5];
+                  return (
+                    <div
+                      key="center"
+                      onClick={() => handleSlotClick(5)}
+                      style={{
+                        gridColumn: "2 / span 2",
+                        gridRow: "2 / span 2",
+                      }}
+                      className="flex items-center justify-center bg-purple-600 cursor-pointer rounded-none overflow-hidden"
+                    >
+                      {src ? (
+                        <video
+                          src={src}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-4xl text-white/40 font-bold">+</span>
+                      )}
+                    </div>
+                  );
+                }
+
+                // All other 12 tiles
+                const src = paddedVideos[idx];
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => handleSlotClick(idx)}
+                    style={{
+                      gridColumn: `${(idx % 4) + 1}`,
+                      gridRow: `${Math.floor(idx / 4) + 1}`,
+                    }}
+                    className="flex items-center justify-center bg-white/10 cursor-pointer rounded-none overflow-hidden"
+                  >
+                    {src ? (
+                      <video
+                        src={src}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-4xl text-white/40 font-bold">+</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            // —— Default N×N Grid ——
+            <div
+              className="grid gap-0"
+              style={{
+                gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+                gridTemplateRows: `repeat(${gridSize}, 1fr)`,
+                width: "calc(min(90vw, 90vh))",
+                height: "calc(min(90vw, 90vh))",
+              }}
+            >
+              {paddedVideos.map((src, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => handleSlotClick(idx)}
+                  className="flex items-center justify-center bg-white/10 cursor-pointer rounded-none overflow-hidden"
+                >
                   {src ? (
                     <video
                       src={src}
@@ -139,16 +260,19 @@ export default function MainGrid() {
                       muted
                       loop
                       playsInline
-                      className="w-full h-full object-cover rounded"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <span className="text-4xl text-white/40 font-bold">+</span>
                   )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+
+
+
 
         {/* Audio player */}
         <audio
@@ -159,7 +283,7 @@ export default function MainGrid() {
         >
           <source src={`/music/${selectedSong}`} type="audio/mp3" />
         </audio>
-
+        
       </div>
     </div>
   );
