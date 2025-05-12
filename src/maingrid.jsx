@@ -74,7 +74,7 @@ export default function MainGrid() {
 
       {/* Foreground */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 gap-4">
-        <h1 className="text-4xl font-bold text-center">Dance Video Grid</h1>
+        <h1 className="text-4xl font-bold text-center">Let's Boogie!</h1>
         <p className="text-gray-400 text-center">Choose a square to learn and record</p>
 
         {/* Grid size selector */}
