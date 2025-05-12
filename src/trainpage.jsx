@@ -24,8 +24,14 @@ export default function TrainPage() {
     setRecordingReady(true);
   };
 
-  const tutorialVideoUrl = "/boogie_square_tutorial.mp4"; // Ensure this is in your /public folder
-
+ // Map grid slot index to tutorial video filename
+  const tutorialMap = {
+        0: { src: "/boogie_square_tutorial.mp4", title: "Boogie Square A" },
+        1: { src: "/boogie_square_tutorial_2.mp4", title: "Hip Hop Flow B" },
+        2: { src: "/boogie_square_tutorial_2.mp4", title: "Hip Hop Flow B" },
+        3: { src: "/boogie_square_tutorial.mp4", title: "Boogie Square A" },
+    };
+  const tutorial = tutorialMap[index] || { src: "/default.mp4", title: "Default" };
   // Countdown timer
   useEffect(() => {
     const timer = setInterval(() => {
@@ -87,7 +93,7 @@ export default function TrainPage() {
         <>
             <video
             ref={tutorialRef}
-            src={tutorialVideoUrl}
+            src={tutorial.src}
             controls
             autoPlay
             muted
@@ -123,104 +129,3 @@ export default function TrainPage() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, { useEffect, useRef, useState } from "react";
-// import { useParams, useNavigate } from "react-router-dom";
-// import { Button } from "./components/ui/button";
-
-// export default function TrainPage() {
-//   const { index } = useParams();
-//   const navigate = useNavigate();
-
-//   const [countdown, setCountdown] = useState(3);
-//   const [showTutorial, setShowTutorial] = useState(false);
-//   const [recordingReady, setRecordingReady] = useState(false);
-
-//   const tutorialRef = useRef(null);
-//   const tutorialVideoUrl = "/sample-dance.mp4"; // make sure this exists in /public
-
-//   // Countdown logic
-//   useEffect(() => {
-//     const timer = setInterval(() => {
-//       setCountdown((prev) => {
-//         if (prev === 1) {
-//           clearInterval(timer);
-//           setShowTutorial(true);
-//         }
-//         return prev - 1;
-//       });
-//     }, 1000);
-
-//     return () => clearInterval(timer);
-//   }, []);
-
-//   return (
-//     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 animate-fadeIn">
-//       <h2 className="text-2xl font-semibold mb-6">Tutorial for Slot #{index}</h2>
-
-//       {/* Countdown */}
-//       {countdown > 0 && (
-//         <div className="text-[5rem] font-bold animate-pulse mb-4">{countdown}</div>
-//       )}
-
-//       {/* Tutorial Video + Actions */}
-//       {showTutorial && (
-//         <>
-//           <video
-//             ref={tutorialRef}
-//             src={tutorialVideoUrl}
-//             controls
-//             autoPlay
-//             muted
-//             className="w-full max-w-xl my-4 rounded-lg shadow-md"
-//             onEnded={() => setRecordingReady(true)}
-//           />
-
-//           <p className="text-gray-400 mb-4">Watch and learn the dance</p>
-
-//           <div className="flex gap-4 mt-2">
-//             <Button
-//               onClick={() => {
-//                 if (tutorialRef.current) {
-//                   tutorialRef.current.currentTime = 0;
-//                   tutorialRef.current.play();
-//                 }
-//               }}
-//             >
-//               Rewatch Tutorial
-//             </Button>
-
-//             {recordingReady && (
-//               <Button
-//                 variant="secondary"
-//                 onClick={() => navigate(`/record/${index}`)}
-//               >
-//                 Continue to Recording
-//               </Button>
-//             )}
-//           </div>
-//         </>
-//       )}
-//     </div>
-//   );
-// }

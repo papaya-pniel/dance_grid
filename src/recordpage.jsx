@@ -17,8 +17,18 @@ export default function RecordPage() {
   const streamRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
-
-  const tutorialVideoUrl = "/boogie_square_tutorial.mp4"; // Ensure it's in public/
+  
+   // Map grid slot index to tutorial video filename
+  const tutorialMap = {
+    0: { src: "/boogie_square_tutorial.mp4", title: "Boogie Square A" },
+    1: { src: "/boogie_square_tutorial_2.mp4", title: "Hip Hop Flow B" },
+    2: { src: "/boogie_square_tutorial_2.mp4", title: "Hip Hop Flow B" },
+    3: { src: "/boogie_square_tutorial.mp4", title: "Boogie Square A" },
+  };
+  const tutorial = tutorialMap[index] || { src: "/default.mp4", title: "Default" };
+  const tutorialVideoUrl = tutorial.src;
+  console.log("Tutorial video URL for index", index, ":", tutorialVideoUrl);
+  
 
   useEffect(() => {
     const tryPlay = () => {
