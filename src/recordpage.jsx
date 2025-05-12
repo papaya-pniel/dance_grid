@@ -25,7 +25,7 @@ export default function RecordPage() {
     2: { src: "/boogie_square_tutorial_2.mp4", title: "Hip Hop Flow B" },
     3: { src: "/boogie_square_tutorial.mp4", title: "Boogie Square A" },
   };
-  const tutorial = tutorialMap[index] || { src: "/default.mp4", title: "Default" };
+  const tutorial = tutorialMap[index] || { src: "/boogie_square_tutorial.mp4", title: "Default" };
   const tutorialVideoUrl = tutorial.src;
   console.log("Tutorial video URL for index", index, ":", tutorialVideoUrl);
   

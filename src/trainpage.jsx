@@ -31,7 +31,7 @@ export default function TrainPage() {
         2: { src: "/boogie_square_tutorial_2.mp4", title: "Hip Hop Flow B" },
         3: { src: "/boogie_square_tutorial.mp4", title: "Boogie Square A" },
     };
-  const tutorial = tutorialMap[index] || { src: "/default.mp4", title: "Default" };
+  const tutorial = tutorialMap[index] || { src: "/boogie_square_tutorial.mp4", title: "Default" };
   // Countdown timer
   useEffect(() => {
     const timer = setInterval(() => {
