@@ -77,7 +77,7 @@ export default function TrainPage() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 animate-fadeIn">
-      <h2 className="text-2xl font-semibold mb-6">Slot #{index}</h2>
+      <h2 className="text-2xl font-semibold mb-6">Boogie Square #{index}</h2>
 
       {countdown > 0 && (
         <div className="text-[5rem] font-bold animate-pulse mb-4">{countdown}</div>
@@ -109,44 +109,118 @@ export default function TrainPage() {
                 Rewatch Tutorial
             </Button>
             )}
-        </>
-      )}
-
-
-      {recordingReady && !recordedBlobUrl && (
-        <div className="flex flex-col items-center gap-4">
-          <video ref={videoRef} autoPlay playsInline className="w-full max-w-xl rounded bg-gray-900" />
-          <div className="flex gap-4">
-            <Button onClick={startRecording} disabled={recording}>
-              Start Recording
-            </Button>
-            <Button onClick={stopRecording} disabled={!recording}>
-              Stop Recording
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {recordedBlobUrl && (
-        <div className="flex flex-col items-center gap-4 mt-4">
-            <video src={recordedBlobUrl} controls className="w-full max-w-xl rounded" />
-
-            <div className="flex gap-4">
+            {recordingReady && (
             <Button
-                onClick={() => {
-                updateVideoAtIndex(parseInt(index), recordedBlobUrl);
-                navigate("/");
-                }}
+                className="mt-4"
+                onClick={() => navigate(`/record/${index}`)}
             >
-                Save & Return to Grid
+                Continue to Recording
             </Button>
+            )}
 
-            <Button variant="secondary" onClick={handleReRecord}>
-                Re-record
-            </Button>
-            </div>
-        </div>
+        </>
       )}
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useEffect, useRef, useState } from "react";
+// import { useParams, useNavigate } from "react-router-dom";
+// import { Button } from "./components/ui/button";
+
+// export default function TrainPage() {
+//   const { index } = useParams();
+//   const navigate = useNavigate();
+
+//   const [countdown, setCountdown] = useState(3);
+//   const [showTutorial, setShowTutorial] = useState(false);
+//   const [recordingReady, setRecordingReady] = useState(false);
+
+//   const tutorialRef = useRef(null);
+//   const tutorialVideoUrl = "/sample-dance.mp4"; // make sure this exists in /public
+
+//   // Countdown logic
+//   useEffect(() => {
+//     const timer = setInterval(() => {
+//       setCountdown((prev) => {
+//         if (prev === 1) {
+//           clearInterval(timer);
+//           setShowTutorial(true);
+//         }
+//         return prev - 1;
+//       });
+//     }, 1000);
+
+//     return () => clearInterval(timer);
+//   }, []);
+
+//   return (
+//     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 animate-fadeIn">
+//       <h2 className="text-2xl font-semibold mb-6">Tutorial for Slot #{index}</h2>
+
+//       {/* Countdown */}
+//       {countdown > 0 && (
+//         <div className="text-[5rem] font-bold animate-pulse mb-4">{countdown}</div>
+//       )}
+
+//       {/* Tutorial Video + Actions */}
+//       {showTutorial && (
+//         <>
+//           <video
+//             ref={tutorialRef}
+//             src={tutorialVideoUrl}
+//             controls
+//             autoPlay
+//             muted
+//             className="w-full max-w-xl my-4 rounded-lg shadow-md"
+//             onEnded={() => setRecordingReady(true)}
+//           />
+
+//           <p className="text-gray-400 mb-4">Watch and learn the dance</p>
+
+//           <div className="flex gap-4 mt-2">
+//             <Button
+//               onClick={() => {
+//                 if (tutorialRef.current) {
+//                   tutorialRef.current.currentTime = 0;
+//                   tutorialRef.current.play();
+//                 }
+//               }}
+//             >
+//               Rewatch Tutorial
+//             </Button>
+
+//             {recordingReady && (
+//               <Button
+//                 variant="secondary"
+//                 onClick={() => navigate(`/record/${index}`)}
+//               >
+//                 Continue to Recording
+//               </Button>
+//             )}
+//           </div>
+//         </>
+//       )}
+//     </div>
+//   );
+// }
