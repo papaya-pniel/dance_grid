@@ -13,6 +13,7 @@ export default function AppRouter() {
       <Routes>
         <Route path="/" element={<SplashPage />} />
         <Route path="/grid" element={<MainGrid />} />
+        {/* <Route path="/grid2" element={<MainGrid2 />} /> */}
         <Route path="/train/:index" element={<TrainPage />} />
         <Route path="/record/:index" element={<RecordPage />} />
       </Routes>
