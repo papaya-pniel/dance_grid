@@ -109,44 +109,69 @@ export default function MainGrid() {
         {/* Grid */}
         <div className="bg-white/5 backdrop-blur-md border border-white/10 shadow-xl">
           {pattern === "center-focus" ? (
-            <div className="grid grid-cols-4 grid-rows-4 gap-0" style={{ width: "min(70vw, 70vh)", height: "min(70vw, 70vh)" }}>
+            <div
+              className="grid gap-0"
+              style={{
+                gridTemplateColumns: `repeat(4, 1fr)`,
+                gridTemplateRows: `repeat(4, 1fr)`,
+                width: "min(70vw, 70vh)",
+                height: "min(70vw, 70vh)"
+              }}
+            >
               {Array.from({ length: 16 }).map((_, idx) => {
-                if ([6, 9, 10].includes(idx)) {
-                  return <div key={idx} className="bg-transparent"></div>;
-                }
+                const isCenter = [5, 6, 9, 10].includes(idx);
+                if (isCenter) return null;
+
+                const centerVideo = paddedVideos[5];
                 const src = paddedVideos[idx];
-                const isCenter = idx === 5;
-                const gridStyle = isCenter ? { gridColumn: "2 / span 2", gridRow: "2 / span 2" } : {};
+                const gridStyle = {};
 
                 return (
                   <div
                     key={idx}
                     onClick={() => handleSlotClick(idx)}
                     style={gridStyle}
-                    className={`relative flex items-center justify-center cursor-pointer rounded-none overflow-hidden ${
-                      isCenter ? "bg-purple-600" : "bg-white/10"
-                    }`}
+                    className="relative flex items-center justify-center cursor-pointer bg-white/10 rounded-none overflow-hidden"
                   >
                     {src ? (
                       <video src={src} autoPlay muted loop playsInline className="w-full h-full object-cover" />
                     ) : (
                       <>
-                        {gridSize === 4 && (
-                          <video
-                            src="/boogie_square_tutorial.mp4"
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            className="absolute inset-0 w-full h-full object-cover opacity-40 z-0"
-                          />
-                        )}
+                        <video
+                          src="/boogie_square_tutorial.mp4"
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          className="absolute inset-0 w-full h-full object-cover opacity-40 z-0"
+                        />
                         <span className="text-4xl text-white/40 font-bold z-10 relative">+</span>
                       </>
                     )}
                   </div>
                 );
               })}
+              <div
+                className="relative flex items-center justify-center cursor-pointer bg-purple-600 overflow-hidden"
+                style={{ gridColumn: "2 / span 2", gridRow: "2 / span 2", zIndex: 10 }}
+                onClick={() => handleSlotClick(5)}
+              >
+                {paddedVideos[5] ? (
+                  <video src={paddedVideos[5]} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                ) : (
+                  <>
+                    <video
+                      src="/boogie_square_tutorial.mp4"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover opacity-40 z-0"
+                    />
+                    <span className="text-4xl text-white/40 font-bold z-10 relative">+</span>
+                  </>
+                )}
+              </div>
             </div>
           ) : (
             <div
