@@ -10,13 +10,15 @@ export default function SplashPage() {
   const navigate = useNavigate();
   const mountRef = useRef(null);
   const platformRef = useRef(null);
+  // Removed cube dissolve logic
   
   const [displayedText, setDisplayedText] = useState('');
   const [typingComplete, setTypingComplete] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
   // Terminal‐style typewriter effect
   useEffect(() => {
-    const fullText = 'hello, welcome to Boogie Square! \nWe are excited to have you on this journey with us. \nWe are crowd funding to help build an online dance app for dancers, and fitness enthusiasts to connect from all around the world. \nWe are asking for a small donation, and in exchange, you will have a Boogie Square video. \nYour feedback is much appreciated. \nWe hope you enjoy the journey <3 ';
+    const fullText = 'hello, welcome to Boogie Square!';
     let index = 0;
     const interval = setInterval(() => {
       setDisplayedText(fullText.slice(0, ++index));
@@ -41,8 +43,11 @@ export default function SplashPage() {
     container.appendChild(renderer.domElement);
 
     // Scene & Camera
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
+    // Scene setup
+    
+    // Scene setup
+    const scene = new THREE.Scene(); // only declared once
+        const camera = new THREE.PerspectiveCamera(
       50,
       window.innerWidth / window.innerHeight,
       0.1,
@@ -72,6 +77,7 @@ export default function SplashPage() {
     const side = canvasTex.width - pad * 2;
     ctx.fillRect(pad, pad, side, side);
     const glowTexture = new THREE.CanvasTexture(canvasTex);
+    glowTexture.needsUpdate = true;
     const platformGeo = new THREE.PlaneGeometry(size, size);
     const platformMat = new THREE.MeshBasicMaterial({
       map: glowTexture,
@@ -88,7 +94,7 @@ export default function SplashPage() {
 
     // Audio analysis for glow pulsing via selected song
     // Create audio element and context
-    const audio = new Audio('/music/missy.mp3');
+    const audio = new Audio('/music/Hooker_Club_Mix.mp3');
     audio.loop = true;
     audio.volume = 0.5;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -216,7 +222,10 @@ export default function SplashPage() {
       {/* Funky Enter Site button */}
       {typingComplete && (
         <button
-          onClick={() => navigate('/grid')}
+          onClick={() => {
+            setFadeOut(true);
+            setTimeout(() => navigate('/grid'), 1000);
+          }}
           onMouseEnter={(e) => e.currentTarget.style.transform = 'translateX(-50%) scale(1.1)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'translateX(-50%) scale(1)'}
           style={{
@@ -239,6 +248,30 @@ export default function SplashPage() {
           Enter Site
         </button>
       )}
+    {fadeOut && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: '#000',
+            opacity: 1,
+            animation: 'fadeOutAnim 1s forwards'
+          }}
+        ></div>
+      )}
     </div>
   );
 }
+
+// CSS animation injected into DOM using style tag
+const styleTag = document.createElement('style');
+styleTag.innerHTML = `
+  @keyframes fadeOutAnim {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+`;
+document.head.appendChild(styleTag);
