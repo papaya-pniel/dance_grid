@@ -1,4 +1,4 @@
-// only 4x4 grid
+// src/MainGrid.jsx
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { VideoContext } from "./context/VideoContext";
@@ -6,9 +6,10 @@ import { VideoContext } from "./context/VideoContext";
 export default function MainGrid() {
   const navigate = useNavigate();
   const { videos } = useContext(VideoContext);
-  const [selectedSong, setSelectedSong] = useState("vibe1.mp3");
+  const [selectedSong, setSelectedSong] = useState("none.mp3");
   const [gridSize, _setGridSize] = useState(4);
   const [pattern, _setPattern] = useState(() => localStorage.getItem("pattern") || "default");
+  const [gridReady, setGridReady] = useState(false);
 
   const setGridSize = (size) => {
     _setGridSize(size);
@@ -41,9 +42,46 @@ export default function MainGrid() {
     if (pattern === "center-focus" && gridSize !== 4) setPattern("default");
   }, [gridSize, pattern]);
 
+  useEffect(() => {
+    let loaded = 0;
+    const total = paddedVideos.filter(Boolean).length;
+
+    if (total === 0) {
+      setGridReady(true);
+      return;
+    }
+
+    paddedVideos.forEach((src) => {
+      if (!src) return;
+      const video = document.createElement("video");
+      video.src = src;
+      video.onloadeddata = () => {
+        loaded += 1;
+        if (loaded >= total) {
+          setGridReady(true);
+        }
+      };
+      video.onerror = () => {
+        console.warn("Failed to load:", src);
+        loaded += 1;
+        if (loaded >= total) {
+          setGridReady(true);
+        }
+      };
+    });
+  }, [paddedVideos]);
+
   const handleSlotClick = (index) => {
     navigate(`/train/${index}`);
   };
+
+  if (!gridReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <p>Loading grid...</p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -73,7 +111,9 @@ export default function MainGrid() {
           {pattern === "center-focus" ? (
             <div className="grid grid-cols-4 grid-rows-4 gap-0" style={{ width: "min(70vw, 70vh)", height: "min(70vw, 70vh)" }}>
               {Array.from({ length: 16 }).map((_, idx) => {
-                if ([6, 9, 10].includes(idx)) return null;
+                if ([6, 9, 10].includes(idx)) {
+                  return <div key={idx} className="bg-transparent"></div>;
+                }
                 const src = paddedVideos[idx];
                 const isCenter = idx === 5;
                 const gridStyle = isCenter ? { gridColumn: "2 / span 2", gridRow: "2 / span 2" } : {};
@@ -93,7 +133,7 @@ export default function MainGrid() {
                       <>
                         {gridSize === 4 && (
                           <video
-                            src="/public/boogie_square_tutorial.mp4"
+                            src="/boogie_square_tutorial.mp4"
                             autoPlay
                             muted
                             loop
@@ -130,7 +170,7 @@ export default function MainGrid() {
                     <>
                       {gridSize === 4 && (
                         <video
-                          src="/public/boogie_square_tutorial.mp4"
+                          src="/boogie_square_tutorial.mp4"
                           autoPlay
                           muted
                           loop

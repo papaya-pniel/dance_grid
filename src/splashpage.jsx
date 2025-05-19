@@ -36,7 +36,7 @@ export default function SplashPage() {
 
   // Load door sound
   useEffect(() => {
-    doorSoundRef.current = new Audio('/sounds/door.mp3');
+    doorSoundRef.current = new Audio('/public/music/door.mp3');
     doorSoundRef.current.volume = 1.0;
   }, []);
 
