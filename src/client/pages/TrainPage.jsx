@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { VideoContext } from "./context/VideoContext";
-import { Button } from "./components/ui/button";
+import { VideoContext } from "../context/VideoContext";
+import { Button } from "../components/ui/button";
 
 export default function TrainPage() {
   const { index } = useParams();

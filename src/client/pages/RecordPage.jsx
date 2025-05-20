@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { VideoContext } from "./context/VideoContext";
-import { Button } from "./components/ui/button";
+import { VideoContext } from "../context/VideoContext";
+import { Button } from "../components/ui/button";
 
 export default function RecordPage() {
   const { index } = useParams();
@@ -162,7 +162,7 @@ export default function RecordPage() {
             <Button
               onClick={() => {
                 updateVideoAtIndex(slotToUpdate, recordedBlobUrl);
-                navigate("/");
+                navigate("/grid");
               }}
             >
               Save & Return to Grid
